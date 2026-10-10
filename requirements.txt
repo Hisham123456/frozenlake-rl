@@ -1,0 +1,11 @@
+cloudpickle==3.1.2
+colorama==0.4.6
+Farama-Notifications==0.0.6
+gymnasium==1.4.0
+iniconfig==2.3.1
+numpy==2.5.4
+packaging==26.3
+pluggy==1.6.0
+Pygments==2.21.0
+pytest==9.1.1
+typing_extensions==4.16.0
