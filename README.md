@@ -56,3 +56,44 @@ frozenlake-rl/
 └── src/
     └── __init__.py
 ```
+## Random agent baseline
+
+The random agent selects each of the four actions with equal probability.
+It does not learn from observations or rewards.
+
+Run the evaluation from the project root, with the virtual environment activated:
+
+```powershell
+python -m src.evaluate --episodes 100 --agent-seed 42 --env-seed 42
+```
+
+The evaluation uses the slippery 4x4 FrozenLake environment.
+Each episode ends when `terminated` or `truncated` is true.
+
+The agent seed controls action selection. The environment seed is incremented
+for each episode: 42, 43, ..., 141 in this example.
+Repeating the command recreates the agent and reproduces the results
+with the same software versions.
+
+### Initial results
+
+| Metric | Value |
+|---|---:|
+| Episodes | 100 |
+| Agent seed | 42 |
+| Initial environment seed | 42 |
+| Success rate | 4.00% |
+| Average reward | 0.0400 |
+| Average episode length | 7.95 actions |
+
+These results describe one seeded experiment.
+Success rate is the main performance metric; short episodes can also
+result from falling into a hole.
+
+## Tests
+
+Run from the project root:
+
+```powershell
+python -m pytest
+```
