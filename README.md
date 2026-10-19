@@ -53,8 +53,15 @@ frozenlake-rl/
 ├── README.md
 ├── .gitignore
 ├── requirements.txt
-└── src/
-    └── __init__.py
+├── src/
+│   ├── __init__.py
+│   ├── agent.py
+│   └── evaluate.py
+├── tests/
+│   ├── test_agent.py
+│   └── test_evaluate.py
+└── notebooks/
+    └── exploration.ipynb
 ```
 ## Random agent baseline
 
