@@ -56,14 +56,14 @@ frozenlake-rl/
 ├── src/
 │   ├── __init__.py
 │   ├── agent.py
-│   └── evaluate.py
-    └──train.py
+│   ├── evaluate.py
+│   └── train.py
 ├── tests/
 │   ├── test_agent.py
-│   └── test_evaluate.py
-    └──test_train.py
+│   ├── test_evaluate.py
+│   └── test_train.py
 └── notebooks/
-    └── exploration.ipynb   
+    └── exploration.ipynb  
 ```
 ## Random agent baseline
 
