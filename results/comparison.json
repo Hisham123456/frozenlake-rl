@@ -1,0 +1,42 @@
+{
+  "environment": "FrozenLake-v1",
+  "map_name": "4x4",
+  "is_slippery": true,
+  "max_episode_steps": 100,
+  "n_episodes": 1000,
+  "env_seed_start": 20000,
+  "env_seed_end": 20999,
+  "random_agent_seed": 42,
+  "greedy_policy": "epsilon=0; first maximum on ties; no learning",
+  "gymnasium_version": "1.4.0",
+  "numpy_version": "2.5.4",
+  "results": {
+    "random": {
+      "n_episodes": 1000,
+      "success_rate": 0.014,
+      "average_reward": 0.014,
+      "average_steps": 7.723
+    },
+    "q-learning": {
+      "n_episodes": 1000,
+      "success_rate": 0.646,
+      "average_reward": 0.646,
+      "average_steps": 43.782
+    }
+  },
+  "q_table_path": "results/q_learning/q_table.npy",
+  "q_table_sha256": "2b5b3233c14914a1fa33f2533fe6cd7e050091dde025d6ffbc2dea8acdcc5913",
+  "training_parameters": {
+    "environment": "FrozenLake-v1",
+    "map_name": "4x4",
+    "is_slippery": true,
+    "n_episodes": 10000,
+    "alpha": 0.1,
+    "gamma": 0.99,
+    "epsilon": 0.3,
+    "agent_seed": 42,
+    "env_seed": 42,
+    "gymnasium_version": "1.4.0",
+    "numpy_version": "2.5.4"
+  }
+}
