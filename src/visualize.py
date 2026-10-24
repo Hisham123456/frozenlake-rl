@@ -11,6 +11,24 @@ from src.agent import QLearningAgent
 from src.train import train_agent
 
 
+def build_game_rules():
+    """Export Gymnasium's transition probabilities for offline free play."""
+    env = gym.make("FrozenLake-v1", map_name="4x4", is_slippery=True)
+    try:
+        transitions = [
+            [
+                [{"probability": float(p), "state": int(state),
+                  "reward": float(reward), "terminated": bool(terminated)}
+                 for p, state, reward, terminated in env.unwrapped.P[s][a]]
+                for a in range(4)
+            ]
+            for s in range(16)
+        ]
+    finally:
+        env.close()
+    return {"transitions": transitions, "max_steps": 100}
+
+
 def replay_policy(q_table, n_episodes, agent_seed, env_seed, epsilon=0, keep=12):
     """Evaluate a copied table using independent environments and RNGs."""
     policy = QLearningAgent(16, 4, seed=agent_seed)
@@ -77,7 +95,8 @@ def build_history(n_episodes=10000, checkpoints=None, eval_episodes=200,
         raise ValueError("Checkpoints must lie between zero and the training episode count")
     checkpoints = sorted(set([0, n_episodes, *checkpoints]))
     history = {
-        "schema_version": 1,
+        "schema_version": 2,
+        "game_rules": build_game_rules(),
         "map": ["SFFF", "FHFH", "FFFH", "HFFG"],
         "parameters": {
             "n_episodes": n_episodes, "alpha": alpha, "gamma": gamma,
@@ -117,6 +136,8 @@ def build_history(n_episodes=10000, checkpoints=None, eval_episodes=200,
 
 
 def save_history(history, output_dir):
+    # Older histories can be upgraded without retraining their policies.
+    history = {**history, "schema_version": 2, "game_rules": build_game_rules()}
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
     for checkpoint in history["checkpoints"]:
@@ -128,6 +149,8 @@ def save_history(history, output_dir):
     # Prevent user-supplied strings in exported data from closing the script tag.
     safe_data = data.replace("<", "\\u003c").replace("&", "\\u0026")
     page = template.replace("__LEARNING_DATA__", safe_data)
+    engine = Path(__file__).with_name("free_play.js").read_text(encoding="utf-8")
+    page = page.replace("__GAME_ENGINE__", engine)
     destination = output / "index.html"
     destination.write_text(page, encoding="utf-8")
     return destination
@@ -146,7 +169,17 @@ def main():
     parser.add_argument("--env-seed", type=int, default=42)
     parser.add_argument("--eval-seed", type=int, default=20000)
     parser.add_argument("--output-dir", type=Path, default=Path("results/learning"))
+    parser.add_argument("--history", type=Path,
+                        help="Rebuild the page from saved history without retraining")
     args = parser.parse_args()
+    if args.history:
+        try:
+            history = json.loads(args.history.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            parser.error(f"Cannot read learning history: {error}")
+        destination = save_history(history, args.output_dir)
+        print(f"Open in your browser: {destination.resolve()}")
+        return
     try:
         history = build_history(
             args.episodes, args.checkpoints, args.eval_episodes, args.replays,
