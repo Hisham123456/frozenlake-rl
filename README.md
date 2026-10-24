@@ -57,11 +57,13 @@ frozenlake-rl/
 │   ├── __init__.py
 │   ├── agent.py
 │   └── evaluate.py
+    └──train.py
 ├── tests/
 │   ├── test_agent.py
 │   └── test_evaluate.py
+    └──test_train.py
 └── notebooks/
-    └── exploration.ipynb
+    └── exploration.ipynb   
 ```
 ## Random agent baseline
 
@@ -104,3 +106,45 @@ Run from the project root:
 ```powershell
 python -m pytest
 ```
+
+## Q-Learning training
+
+The Q-Learning agent stores action-value estimates in a Q-table.
+For 4x4 FrozenLake, the table contains 16 states and 4 actions.
+
+Run training from the project root, with the virtual environment activated:
+
+```powershell
+python -m src.train --episodes 10000 --alpha 0.1 --gamma 0.99 --epsilon 0.3 --agent-seed 42 --env-seed 42 --output-dir results/q_learning
+```
+
+### Parameters
+
+| Option | Meaning | Default |
+|---|---|---:|
+| `--episodes` | Number of training episodes | 10000 |
+| `--alpha` | Learning rate | 0.1 |
+| `--gamma` | Discount factor for future rewards | 0.99 |
+| `--epsilon` | Exploration probability, constant during training | 0.3 |
+| `--agent-seed` | Seed for action selection | 42 |
+| `--env-seed` | Initial environment seed, incremented per episode | 42 |
+| `--output-dir` | Destination folder | `results/q_learning` |
+
+Training uses the slippery 4x4 FrozenLake environment.
+
+Terminal transitions use only the immediate reward as the update target.
+Time-limit truncations stop the episode while retaining the next-state
+value estimate in the update.
+
+### Saved artifacts
+
+Training creates:
+- `q_table.npy`: the learned Q-table, reloadable with NumPy.
+- `parameters.json`: environment settings, training parameters, seeds,
+  and Gymnasium and NumPy versions.
+
+Running training again with the same output directory replaces these files.
+Generated artifacts in `results/q_learning/` are ignored by Git.
+
+Training reproducibility requires the same parameters, seeds, and software
+versions. Performance evaluation will be documented separately.
