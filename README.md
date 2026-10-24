@@ -62,12 +62,14 @@ frozenlake-rl/
 │   ├── evaluate.py
 │   ├── train.py
 │   ├── visualize.py
+│   ├── free_play.js
 │   └── learning_viewer.html
 ├── tests/
 │   ├── test_agent.py
 │   ├── test_evaluate.py
 │   ├── test_evaluate_extended.py
 │   ├── test_train.py
+│   ├── test_free_play.py
 │   └── test_visualize.py
 ├── notebooks/
 │   └── exploration.ipynb
@@ -288,6 +290,44 @@ matching files in its output directory. The folder contains `history.json`,
 reloadable `q_table_XXXXXX.npy` checkpoints, and the self-contained `index.html`.
 Generated files in `results/learning/` are ignored by Git. The original
 `results/q_learning/` artifacts are left untouched.
+
+## Play new episodes from a chosen start
+
+Open `results/learning/index.html` and select **Partie libre**.
+Click any safe tile, then use **Lancer**, **Pause**, or **Un pas** to watch the
+trained agent act. Adjust the speed with the dedicated selector.
+Holes and the goal cannot be selected as starting tiles.
+
+**Nouvelle partie** keeps the chosen start and clears the previous game.
+Subsequent steps use new random draws. Two games may still follow the same
+trajectory by chance. Selecting another start also resets and pauses play.
+Switching tabs pauses the current animation.
+
+The policy is the final checkpoint's Q-table. It is copied and frozen:
+epsilon is zero, maximum-value ties are broken randomly, and no learning
+occurs. The game ends upon reaching a hole or the goal, or after 100 actions.
+The page shows the requested action, actual displacement, current Q-values,
+outcome, and action count.
+
+Unlike the learning replays, these games are generated one step at a time in
+the browser. Transition probabilities are exported directly from Gymnasium's
+slippery 4x4 environment. Browser randomness controls slips and ties; it does
+not reproduce NumPy's seeded random stream. This mode is for interactive
+play, while the evaluation commands provide reproducible performance metrics.
+The reported success rates apply to the usual start at state 0, not to arbitrary
+starting tiles.
+
+To upgrade an already generated viewer without retraining:
+
+```powershell
+python -m src.visualize --history results/learning/history.json
+```
+
+For a fresh checkout, `python -m src.visualize` still generates the full
+learning history and the new game mode together. The exported HTML embeds
+the game engine and rules and works offline, without a server or Node.js.
+The optional JavaScript engine tests run when Node.js is available; the
+Python tests also verify every exported transition against Gymnasium.
 
 ## Development workflow
 
