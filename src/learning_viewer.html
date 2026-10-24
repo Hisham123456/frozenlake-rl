@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FrozenLake — Observer l’apprentissage</title>
+<style>
+:root{--ink:#19394e;--muted:#506b7d;--ice:#eaf5fa;--line:#c5dce7;--blue:#205fa8;--teal:#13766f;--red:#a34431;--paper:#f5fafc}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:"Segoe UI",Tahoma,sans-serif;line-height:1.5}button,select,input{font:inherit}button,select{cursor:pointer}button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,[role=button]:focus-visible{outline:3px solid #e5a134;outline-offset:4px}button{border:1px solid var(--line);background:white;color:var(--ink);border-radius:8px;padding:9px 14px;min-height:42px}button:hover{border-color:var(--blue)}button:disabled{opacity:.45;cursor:default}button.primary{background:var(--blue);color:white;border-color:var(--blue)}.wrap{max-width:1180px;margin:auto;padding:30px 36px 40px}header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:17px;gap:20px}.brand{font-size:19px;font-weight:700}.brand svg{vertical-align:middle;margin-right:9px}.local{font-size:13px;color:var(--muted)}h1{font:normal 40px/1.15 Georgia,serif;letter-spacing:-1px;margin:27px 0 10px}p{max-width:76ch}p.intro{margin:0 0 24px;color:var(--muted)}.stage{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:white;padding:16px 20px;border:1px solid var(--line);border-radius:10px}.stage label{font-weight:600}.stage select{border:0;background:var(--ice);padding:9px;border-radius:6px;color:var(--ink)}.stage input{flex:1;min-width:150px;accent-color:var(--blue)}.stage output{font-variant-numeric:tabular-nums;font-size:14px;color:var(--muted)}main{display:grid;grid-template-columns:minmax(320px,1fr) minmax(320px,1fr);gap:44px;margin-top:26px}h2{font-size:19px;margin:0 0 14px}h3{font-size:15px;margin:22px 0 10px}.board-wrap{max-width:440px;margin:auto}.board{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;aspect-ratio:1}.tile{background:#e2f0f6;border:1px solid #b8d3e0;border-radius:10px;position:relative;overflow:hidden}.tile .number{position:absolute;top:6px;left:9px;font-size:12px;color:#57768a}.tile .letter{position:absolute;bottom:5px;right:9px;font-size:12px;color:#57768a}.tile:before{content:"";position:absolute;width:60%;height:30%;border-left:1px solid #b2d4e4;border-bottom:1px solid #b2d4e4;transform:rotate(-28deg);left:30%;top:37%;opacity:.5}.tile.hole{background:#284d64;border-color:#284d64}.tile.hole:before{width:62%;height:62%;left:19%;top:20%;border:7px solid #426d85;border-radius:50%;background:#112e42;transform:none;opacity:1}.tile.hole .number,.tile.hole .letter{color:#d3e8f3}.tile.goal{background:#d5eee7;border-color:#8fbbac}.tile.goal:before{display:none}.flag{position:absolute;left:31%;top:22%;width:40%;height:60%}.tile.start{background:#d5e9f7}.tile.current{outline:3px solid var(--blue);outline-offset:-3px}.route{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.route polyline{fill:none;stroke:#237eaa;stroke-width:3;stroke-dasharray:4 5;opacity:.65;stroke-linejoin:round}.agent{position:absolute;width:13%;height:17%;left:12.5%;top:12.5%;transform:translate(-50%,-50%);transition:left .28s ease,top .28s ease;pointer-events:none;filter:drop-shadow(0 3px 2px #24486345)}.agent svg{width:100%;height:100%}.agent.fallen{opacity:.45;transform:translate(-50%,-40%) scale(.75)}.legend{display:flex;gap:17px;flex-wrap:wrap;margin:14px 0;font-size:12px;color:var(--muted)}.legend span:before{content:"";display:inline-block;width:11px;height:11px;border-radius:3px;background:#d5e9f7;margin-right:5px;vertical-align:middle}.legend .h:before{background:#284d64}.legend .g:before{background:#9bd1bf}.playback{display:flex;gap:8px;margin:20px 0 12px;flex-wrap:wrap}.scrub{display:flex;align-items:center;gap:12px}.scrub input{width:100%;accent-color:var(--blue)}.scrub output{white-space:nowrap;font-size:13px;font-variant-numeric:tabular-nums}.speed{font-size:13px;display:flex;align-items:center;gap:10px;color:var(--muted);margin:13px 0}.speed select{border:1px solid var(--line);border-radius:5px;padding:4px;color:var(--ink);background:white}.status{padding:12px 14px;border-left:3px solid var(--blue);background:white;min-height:70px}.status strong{display:block;font-size:15px}.status small{color:var(--muted)}.status.success{border-color:var(--teal)}.status.hole{border-color:var(--red)}.mode{display:flex;background:#dfebf1;padding:4px;border-radius:9px;gap:4px;margin-bottom:12px}.mode button{flex:1;border:0;background:transparent;font-size:13px;padding:8px}.mode button[aria-pressed=true]{background:white;box-shadow:0 1px 3px #19394e18;color:var(--blue);font-weight:600}.metrics{display:flex;gap:28px;padding:10px 0 20px;border-bottom:1px solid var(--line)}.metric strong{font-size:32px;display:block;font-weight:600;line-height:1.2;font-variant-numeric:tabular-nums}.metric span{font-size:12px;color:var(--muted)}.metric:first-child strong{color:var(--teal)}.chart{width:100%;height:auto;display:block;margin:12px 0}.chart text{font-family:"Segoe UI",sans-serif;font-size:12px;fill:var(--muted)}.chart .dot{cursor:pointer;stroke:white;stroke-width:3;fill:var(--blue)}.chart .dot.selected{fill:var(--teal);stroke:var(--ink)}.note{font-size:13px;color:var(--muted);margin:0 0 12px}.trials{display:flex;flex-wrap:wrap;gap:6px}.trials button{min-width:36px;min-height:34px;padding:3px 8px;font-size:12px;border-bottom:3px solid var(--line)}.trials button.success{border-bottom-color:var(--teal)}.trials button.hole{border-bottom-color:var(--red)}.trials button.timeout{border-bottom-color:#ab7a21}.trials button[aria-pressed=true]{background:var(--ink);color:white;border-top-color:var(--ink)}.small-legend{font-size:12px;color:var(--muted);margin-top:9px}.qgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.qvalue{padding:7px 3px;background:var(--ice);text-align:center;border-radius:5px;font-size:12px}.qvalue strong{display:block;font-size:14px}.qvalue.best{background:#d2ebe3;color:#145f54}details{border-top:1px solid var(--line);margin-top:25px;padding-top:18px;font-size:13px;color:var(--muted)}summary{cursor:pointer;font-weight:600;color:var(--ink)}details dl{display:grid;grid-template-columns:max-content 1fr;gap:5px 18px}dt{font-weight:600}dd{margin:0}footer{margin-top:28px;border-top:1px solid var(--line);padding-top:15px;font-size:12px;color:var(--muted)}@media(max-width:820px){main{grid-template-columns:1fr;gap:30px}.wrap{padding:20px}.board-wrap{max-width:430px}h1{font-size:32px}.stage{padding:12px}.metrics{justify-content:space-between;gap:10px}.metric strong{font-size:28px}}@media(prefers-reduced-motion:reduce){.agent{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="brand"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1 22 7v11l-10 5L2 18V7Z" fill="#cae4f0" stroke="#205fa8"/><path d="m2 7 10 6 10-6M12 13v10" fill="none" stroke="#205fa8"/></svg>FrozenLake</div><span class="local">Carnet d’apprentissage interactif · hors ligne</span></header>
+<h1>Apprendre à traverser la glace.</h1>
+<p class="intro">Du premier essai à la politique apprise : compare les étapes, puis observe les choix de l’agent sur le lac.</p>
+<div class="stage"><label for="checkpoint">Après</label><select id="checkpoint" aria-label="Étape d’apprentissage"></select><input id="checkpoint-range" type="range" min="0" value="0" aria-label="Parcourir les étapes d’apprentissage"><output id="stage-count"></output><button id="evolution" class="primary">Voir l’évolution</button></div>
+<main>
+<section aria-label="Animation des déplacements"><div class="board-wrap"><h2>Une tentative sur le lac</h2><div class="board" id="board" role="img" aria-label="Carte FrozenLake de quatre lignes et quatre colonnes"><svg class="route" viewBox="0 0 400 400" aria-hidden="true"><polyline id="route"/></svg><div id="agent" class="agent"><svg viewBox="0 0 50 62" aria-hidden="true"><ellipse cx="25" cy="56" rx="17" ry="4" fill="#19394e25"/><path d="m13 40-8 11 12-3M37 40l8 11-12-3" fill="#19394e"/><ellipse cx="25" cy="33" rx="16" ry="24" fill="#19394e"/><ellipse cx="25" cy="37" rx="11" ry="17" fill="#fff"/><ellipse cx="20" cy="22" rx="5" ry="7" fill="#fff"/><ellipse cx="30" cy="22" rx="5" ry="7" fill="#fff"/><circle cx="21" cy="22" r="1.7" fill="#19394e"/><circle cx="29" cy="22" r="1.7" fill="#19394e"/><path d="m20 28 5 5 5-5" fill="#e0a145"/><path d="M11 33q14 7 28 0l-1 6q-12 5-26-1Z" fill="#be5944"/><path d="m31 38 4 11 5-2-5-10" fill="#be5944"/><path d="m15 54-2 5h11l-2-5m7 0-1 5h11l-3-5" fill="#e0a145"/></svg></div></div><div class="legend"><span>Départ S</span><span>Glace F</span><span class="h">Trou H</span><span class="g">Objectif G</span></div>
+<div class="playback"><button class="primary" id="play">Lire la tentative</button><button id="step">Un pas</button><button id="reset">Recommencer</button></div><div class="scrub"><input id="frame" type="range" min="0" value="0" aria-label="Position dans la tentative"><output id="frame-count"></output></div><div class="speed"><label for="speed">Vitesse</label><select id="speed"><option value="900">Lente</option><option value="450" selected>Normale</option><option value="160">Rapide</option><option value="60">Très rapide</option></select></div><div id="status" class="status" role="status" aria-live="polite"></div></div></section>
+<section aria-label="Progression et choix de tentative"><h2>Ce que l’agent a appris</h2><div class="metrics"><div class="metric"><strong id="success-rate"></strong><span>de réussite à cette étape</span></div><div class="metric"><strong id="average-steps"></strong><span>actions par épisode</span></div></div><svg id="chart" class="chart" viewBox="0 0 480 230" role="img" aria-label="Taux de réussite par nombre d’épisodes d’entraînement"></svg><p class="note" id="protocol"></p>
+<h3>Comportement à rejouer</h3><div class="mode" aria-label="Mode de comportement"><button id="greedy-mode" aria-pressed="true">Politique apprise · ε = 0</button><button id="explore-mode" aria-pressed="false">Avec exploration</button></div><p class="note" id="mode-note"></p><h3 id="trial-title">Tentatives enregistrées</h3><div id="trials" class="trials" aria-label="Choisir une tentative"></div><p class="small-legend">Bord vert : objectif · rouge : trou · ocre : limite atteinte</p><h3 id="q-title">Valeurs apprises à la case 0</h3><div id="qvalues" class="qgrid"></div>
+<details><summary>Comprendre cette expérience</summary><p>Les déplacements sont rejoués à partir de tables Q sauvegardées. Ce ne sont pas les épisodes historiques utilisés pour apprendre. La courbe mesure la politique sans exploration ; les séquences « Avec exploration » montrent comment elle se comporte avec le ε de l’entraînement.</p><p>Les égalités entre meilleures actions sont départagées au hasard avec une graine fixe. Au départ, les valeurs sont toutes nulles : le comportement est donc aléatoire même avec ε = 0. La glace reste glissante à toutes les étapes.</p><p>Les progrès ne sont pas forcément réguliers. Une tentative ne suffit pas à juger la qualité de la politique. Les premières tentatives sont affichées sans sélection de réussites ; la courbe utilise davantage d’épisodes.</p><dl id="parameters"></dl></details></section>
+</main><footer>Les flèches décrivent l’action demandée ; la glissade peut envoyer l’agent dans une autre direction. Carte fixe 4 × 4, graine et paramètres enregistrés avec cette visualisation.</footer>
+</div>
+<script id="learning-data" type="application/json">__LEARNING_DATA__</script>
+<script>
+'use strict';
+const data = JSON.parse(document.getElementById('learning-data').textContent);
+const $ = id => document.getElementById(id);
+const checkpoints = data.checkpoints, params = data.parameters;
+const fmt = n => n.toLocaleString('fr-FR');
+const directions = ['← Gauche','↓ Bas','→ Droite','↑ Haut'];
+let checkpointIndex=0, trialIndex=0, frame=0, mode='greedy', timer=null, evolving=false;
+const board=$('board');
+data.map.join('').split('').forEach((letter,index)=>{
+ const tile=document.createElement('div');tile.className='tile '+({S:'start',H:'hole',G:'goal'}[letter]||'');
+ tile.id='tile-'+index;tile.innerHTML='<span class="number">'+index+'</span><span class="letter">'+letter+'</span>';
+ if(letter==='G')tile.innerHTML+='<svg class="flag" viewBox="0 0 40 60" aria-hidden="true"><path d="M9 57V5" stroke="#276555" stroke-width="3"/><path d="M10 6h25L27 18l8 11H10" fill="#2b8b6d"/></svg>';
+ board.insertBefore(tile,board.querySelector('.route'));
+});
+checkpoints.forEach((cp,index)=>{const opt=document.createElement('option');opt.value=index;opt.textContent=fmt(cp.episode)+' épisodes'+(cp.episode===0?' · avant apprentissage':'');$('checkpoint').append(opt)});
+$('checkpoint-range').max=checkpoints.length-1;
+$('explore-mode').textContent='Avec exploration · ε = '+String(params.epsilon).replace('.',',');
+$('protocol').textContent=fmt(params.eval_episodes)+' épisodes par étape, mêmes graines '+fmt(params.eval_seed)+' à '+fmt(params.eval_seed+params.eval_episodes-1)+'. Clique sur un point pour visiter une étape.';
+const entries=[['Épisodes d’entraînement',fmt(params.n_episodes)],['Taux d’apprentissage α',params.alpha],['Importance du futur γ',params.gamma],['Exploration ε',params.epsilon],['Graine de l’agent',params.agent_seed],['Graines d’entraînement',params.env_seed+' à '+(params.env_seed+params.n_episodes-1)],['Graines d’évaluation',params.eval_seed+' à '+(params.eval_seed+params.eval_episodes-1)],['Versions','Gymnasium '+params.gymnasium_version+' ; NumPy '+params.numpy_version]];
+entries.forEach(([key,value])=>{let dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=key;dd.textContent=value;$('parameters').append(dt,dd)});
+function current(){return checkpoints[checkpointIndex]}
+function trials(){return mode==='greedy'?current().evaluation.trials:current().exploration_trials}
+function trial(){return trials()[trialIndex]}
+function stop(){if(timer!==null)clearTimeout(timer);timer=null;evolving=false;$('play').textContent='Lire la tentative';$('evolution').textContent='Voir l’évolution'}
+function chart(){
+ const chart=$('chart');const maxEpisode=checkpoints[checkpoints.length-1].episode||1;
+ const x=n=>48+410*n/maxEpisode,y=n=>184-150*n;
+ let markup='';[0,.25,.5,.75,1].forEach(v=>{markup+='<line x1="48" x2="458" y1="'+y(v)+'" y2="'+y(v)+'" stroke="#d1e0e8"/><text x="39" y="'+(y(v)+4)+'" text-anchor="end">'+(v*100)+' %</text>'});
+ markup+='<text x="48" y="211">0</text><text x="458" y="211" text-anchor="end">'+fmt(maxEpisode)+' épisodes</text>';
+ markup+='<polyline points="'+checkpoints.map(cp=>x(cp.episode)+','+y(cp.evaluation.success_rate)).join(' ')+'" fill="none" stroke="#205fa8" stroke-width="2.5"/>';
+ checkpoints.forEach((cp,index)=>{markup+='<circle class="dot '+(index===checkpointIndex?'selected':'')+'" cx="'+x(cp.episode)+'" cy="'+y(cp.evaluation.success_rate)+'" r="'+(index===checkpointIndex?7:5)+'" tabindex="0" role="button" data-index="'+index+'" aria-label="'+cp.episode+' épisodes, réussite '+(cp.evaluation.success_rate*100).toFixed(1)+' pour cent"><title>'+fmt(cp.episode)+' épisodes : '+(cp.evaluation.success_rate*100).toFixed(1)+' %</title></circle>'});
+ chart.innerHTML=markup;
+ chart.querySelectorAll('[data-index]').forEach(dot=>{const select=()=>selectCheckpoint(Number(dot.dataset.index));dot.addEventListener('click',select);dot.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select()}})});
+}
+function renderFrame(){
+ const t=trial();frame=Math.min(frame,t.transitions.length);const transition=frame?t.transitions[frame-1]:null;
+ const state=transition?transition.to:t.initial_state;
+ const ended=frame===t.transitions.length;
+ $('agent').style.left=((state%4+.5)*25)+'%';$('agent').style.top=((Math.floor(state/4)+.5)*25)+'%';
+ $('agent').classList.toggle('fallen',ended&&t.outcome==='hole');
+ for(let i=0;i<16;i++)$('tile-'+i).classList.toggle('current',i===state);
+ const states=[t.initial_state,...t.transitions.slice(0,frame).map(s=>s.to)];
+ $('route').setAttribute('points',states.map(s=>(s%4*100+50)+','+(Math.floor(s/4)*100+50)).join(' '));
+ $('frame').max=t.transitions.length;$('frame').value=frame;$('frame-count').textContent=frame+' / '+t.transitions.length+' actions';
+ let title='Prêt au départ',description='Case 0 · graine '+t.seed;
+ if(transition){title='Case '+transition.from+' → '+state;description='Action demandée : '+directions[transition.action]+' · récompense : '+transition.reward}
+ if(ended){title={success:'Objectif atteint !',hole:'Chute dans un trou',timeout:'Limite de 100 actions atteinte'}[t.outcome];description+=' · '+t.transitions.length+' actions'}
+ $('status').className='status'+(ended?' '+t.outcome:'');$('status').replaceChildren();let strong=document.createElement('strong'),small=document.createElement('small');strong.textContent=title;small.textContent=description;$('status').append(strong,small);
+ $('board').setAttribute('aria-label','Lac gelé ; agent à la case '+state+(ended?' ; '+title:''));
+ $('q-title').textContent='Valeurs apprises à la case '+state;
+ const values=current().q_table[state],best=Math.max(...values);$('qvalues').replaceChildren();
+ values.forEach((value,index)=>{let cell=document.createElement('div');cell.className='qvalue'+(value===best?' best':'');let label=document.createElement('span'),number=document.createElement('strong');label.textContent=directions[index];number.textContent=value.toFixed(3).replace('.',',');cell.append(label,number);$('qvalues').append(cell)});
+ $('step').disabled=ended;
+}
+function renderTrials(){
+ $('trials').replaceChildren();trials().forEach((t,index)=>{let b=document.createElement('button');b.textContent=index+1;b.className=t.outcome;b.setAttribute('aria-pressed',String(index===trialIndex));b.setAttribute('aria-label','Tentative '+(index+1)+', graine '+t.seed+', '+({success:'réussite',hole:'trou',timeout:'limite'}[t.outcome]));b.addEventListener('click',()=>{stop();trialIndex=index;frame=0;renderTrials();renderFrame()});$('trials').append(b)});
+ $('trial-title').textContent='Les '+trials().length+' premières tentatives';
+}
+function renderCheckpoint(){
+ const cp=current();$('checkpoint').value=checkpointIndex;$('checkpoint-range').value=checkpointIndex;$('stage-count').textContent='Étape '+(checkpointIndex+1)+' / '+checkpoints.length;
+ $('success-rate').textContent=(cp.evaluation.success_rate*100).toLocaleString('fr-FR',{maximumFractionDigits:1})+' %';$('average-steps').textContent=cp.evaluation.average_steps.toLocaleString('fr-FR',{maximumFractionDigits:1});
+ $('greedy-mode').setAttribute('aria-pressed',String(mode==='greedy'));$('explore-mode').setAttribute('aria-pressed',String(mode==='explore'));
+ $('mode-note').textContent=mode==='greedy'?'Sans exploration ni mise à jour. Les égalités entre meilleures actions sont tirées au sort.':'Rejeu avec la probabilité d’exploration utilisée pendant l’entraînement. La courbe ci-dessus reste mesurée sans exploration.';
+ chart();renderTrials();renderFrame();
+}
+function selectCheckpoint(index){stop();checkpointIndex=index;trialIndex=0;frame=0;renderCheckpoint()}
+function tick(){
+ if(frame<trial().transitions.length){frame++;renderFrame();timer=setTimeout(tick,Number($('speed').value));return}
+ if(evolving&&checkpointIndex<checkpoints.length-1){timer=setTimeout(()=>{checkpointIndex++;trialIndex=0;frame=0;renderCheckpoint();timer=setTimeout(tick,Number($('speed').value))},1200);return}
+ stop();
+}
+$('checkpoint').addEventListener('change',e=>selectCheckpoint(Number(e.target.value)));
+$('checkpoint-range').addEventListener('input',e=>selectCheckpoint(Number(e.target.value)));
+$('play').addEventListener('click',()=>{if(timer!==null){stop();return}if(frame===trial().transitions.length){frame=0;renderFrame()}$('play').textContent='Pause';timer=setTimeout(tick,Number($('speed').value))});
+$('step').addEventListener('click',()=>{stop();frame++;renderFrame()});
+$('reset').addEventListener('click',()=>{stop();frame=0;renderFrame()});
+$('frame').addEventListener('input',e=>{stop();frame=Number(e.target.value);renderFrame()});
+function setMode(value){stop();mode=value;trialIndex=0;frame=0;renderCheckpoint()}
+$('greedy-mode').addEventListener('click',()=>setMode('greedy'));
+$('explore-mode').addEventListener('click',()=>setMode('explore'));
+$('evolution').addEventListener('click',()=>{if(evolving){stop();return}stop();mode='greedy';checkpointIndex=0;trialIndex=0;frame=0;renderCheckpoint();evolving=true;$('evolution').textContent='Arrêter l’évolution';$('play').textContent='Pause';timer=setTimeout(tick,Number($('speed').value))});
+renderCheckpoint();
+</script>
+</body>
+</html>

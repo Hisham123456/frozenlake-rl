@@ -60,12 +60,15 @@ frozenlake-rl/
 │   ├── __init__.py
 │   ├── agent.py
 │   ├── evaluate.py
-│   └── train.py
+│   ├── train.py
+│   ├── visualize.py
+│   └── learning_viewer.html
 ├── tests/
 │   ├── test_agent.py
 │   ├── test_evaluate.py
 │   ├── test_evaluate_extended.py
-│   └── test_train.py
+│   ├── test_train.py
+│   └── test_visualize.py
 ├── notebooks/
 │   └── exploration.ipynb
 └── results/
@@ -217,6 +220,74 @@ were chosen for a simple educational implementation; optimality is not claimed.
 
 The report is versioned, while generated training artifacts remain local and
 can be recreated with the documented training command.
+
+## Watch the agent learn
+
+Generate an interactive offline viewer from the project root:
+
+```powershell
+python -m src.visualize
+```
+
+Then double-click `results/learning/index.html` in Windows File Explorer to
+open it in your browser. No web server, internet connection, extra package,
+or notebook extension is needed to view the exported page. The training
+command prints progress while generating the replay data.
+
+The page includes:
+- Seven training stages: 0, 100, 500, 1000, 2500, 5000, and 10000 episodes.
+- A clickable success-rate curve and checkpoint selector.
+- Animated trajectories, play/pause, single step, timeline, and playback speed.
+- A tour that plays the first recorded attempt at each checkpoint.
+- The first 12 evaluation attempts with success, hole, and time-limit outcomes.
+- A switch between the learned policy (epsilon zero) and a replay with the
+  training exploration probability (epsilon 0.3 by default).
+- Q-values for the agent's current cell and the requested action at each step.
+
+These trajectories are **replays from checkpoint policies**, not recordings
+of the historical training episodes. Each checkpoint is evaluated over 200
+episodes by default, using the same environment seeds 20000 through 20199.
+The first 12 are displayed without selecting particular outcomes. Exploration
+replays use the same seed range but do not contribute to the success-rate curve.
+All replays use separate agents and environments, so capturing checkpoints
+does not change the training RNG state or final Q-table.
+
+In this viewer, greedy ties are broken randomly with a fixed seed, matching
+the agent's training tie rule. This makes the zero-table policy act randomly.
+The existing comparison command retains its documented first-maximum tie rule.
+The final viewer score of 60% is measured on 200 episodes, rather than the
+1,000 episodes used for the 64.6% comparison report.
+
+The default run produced these success rates:
+
+| Training episodes | Success on 200 evaluation episodes |
+|---:|---:|
+| 0 | 1.5% |
+| 100 | 1.5% |
+| 500 | 32.0% |
+| 1000 | 57.0% |
+| 2500 | 70.0% |
+| 5000 | 56.0% |
+| 10000 | 60.0% |
+
+Learning is not monotonic. Slips remain stochastic, and constant learning
+and exploration rates can change the policy after it has improved. This curve
+illustrates a single training run; it is not an independent comparison across
+multiple runs and is not used here to select hyperparameters or a checkpoint.
+
+To customize generation:
+
+```powershell
+python -m src.visualize --episodes 10000 --checkpoints 100 500 1000 2500 5000 --eval-episodes 200 --replays 12 --alpha 0.1 --gamma 0.99 --epsilon 0.3 --agent-seed 42 --env-seed 42 --eval-seed 20000 --output-dir results/learning
+```
+
+Training and evaluation seed ranges must not overlap. The generator validates
+this before training; use a higher `--eval-seed` for a longer training run.
+The initial and final checkpoints are always included. Each run replaces
+matching files in its output directory. The folder contains `history.json`,
+reloadable `q_table_XXXXXX.npy` checkpoints, and the self-contained `index.html`.
+Generated files in `results/learning/` are ignored by Git. The original
+`results/q_learning/` artifacts are left untouched.
 
 ## Development workflow
 
