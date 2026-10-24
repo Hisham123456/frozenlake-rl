@@ -182,3 +182,6 @@ cython_debug/
 
 # Generated training artifacts
 results/q_learning/
+
+# Rebuildable learning visualization and checkpoints
+results/learning/

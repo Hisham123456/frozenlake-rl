@@ -9,7 +9,10 @@ import gymnasium as gym
 from src.agent import QLearningAgent
 
 
-def train_agent(env, agent, n_episodes, alpha, gamma, epsilon, seed=42):
+def train_agent(
+    env, agent, n_episodes, alpha, gamma, epsilon, seed=42,
+    on_episode_end=None,
+):
     if n_episodes <= 0:
         raise ValueError("n_episodes must be greater than zero")
     
@@ -44,6 +47,9 @@ def train_agent(env, agent, n_episodes, alpha, gamma, epsilon, seed=42):
 
             if terminated or truncated:
                 break
+
+        if on_episode_end is not None:
+            on_episode_end(episode + 1, agent)
 
 def save_training(agent, output_dir, parameters):
     output_path = Path(output_dir)
